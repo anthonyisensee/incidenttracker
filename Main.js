@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function incidentHtml(incident) {
 
-        const incident_description = incident.description ? incident.description : `<span class="is-italic">No description.</span>`
+        const incident_description = incident.description ? incident.description : `<span class="is-italic">No description</span>`
 
         return `<p>${incident.date} - ${incident_description}</p>`
 
