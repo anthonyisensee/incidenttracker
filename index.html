@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Days Since FileCloud Incident</title>
+    <title>Incident Tracker</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
     <script type="module" src="main.js"></script>
 </head>
@@ -11,7 +11,7 @@
     <section class="section has-text-centered">
         <div class="block pt-6">
             <div class="content is-large">
-                <h1>It has been<br><span id="time_since_incident">∞</span><br>since the last FileCloud incident.</h1>
+                <h1>It has been<br><span id="time_since_incident">∞</span><br>since the last <span class="service-name"></span> incident.</h1>
             </div>
         </div>
     </section>
@@ -19,7 +19,7 @@
         <div class="block">
             <div class="field">
                 <div class="control">
-                    <textarea id="incident_description" name="Incident Description" class="textarea" placeholder="Optional incident description" rows="3"></textarea>
+                    <textarea id="incident_description" name="Incident description (optional)" class="textarea" placeholder="Incident description (optional)" rows="3"></textarea>
                 </div>
             </div>
             <button id="create_new_incident" class="button is-danger">It Happened Again</button>
@@ -37,7 +37,7 @@
     <footer class="footer has-text-centered">
         <div class="content is-small">
             <p>Incident data is saved to browser local storage. Data <span class="is-italic">will not</span> transfer between machines.</p>
-            <p>Developed for Ricky Moore by Anthony Isensee. Copium not included.</p>
+            <p>Developed for the needs of Ricky Moore by Anthony Isensee. Necessary copium not included.</p>
         </div>
     </footer>
 </body>
