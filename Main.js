@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const difference_unit_labels = ["day", "hour", "minute", "second"]
             const difference_values  = [days, hours % 24, minutes % 60, seconds % 60]
 
-            let first_position_not_zero = undefined
-            // Find first array position that is not zero
+            let position_first_value_not_zero = difference_values.length - 1    // Sets a default so "0 seconds" will appear
+
             for (let i = 0; i < difference_values.length; i++) {
 
                 if (difference_values[i] != 0) {
 
-                    first_position_not_zero = i
+                    position_first_value_not_zero = i
                     
                     break
 
@@ -81,28 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             }
 
-            let difference_string = ""
+            output_string = ""
 
-            for (let i = first_position_not_zero; i < difference_values.length; i++) {
+            for (let i = position_first_value_not_zero; i < difference_values.length; i++) {
 
-                difference_string += `${difference_values[i]} ${difference_unit_labels[i]}` + (difference_values[i] == 1 ? " " : "s ")
-
-            }
-
-            // const seconds = Math.round(time_difference) % 60
-            // const minutes = Math.round(time_difference / (60)) % 60
-            // const hours = Math.round(time_difference / (60 * 60)) % 24
-            // const days = Math.round(time_difference / (60 * 60 * 24))
-
-            function formatNumber(number, singleUnit) {
-                
-                return `${number} ${singleUnit}` + (number == 1 ? " " : "s ")
+                output_string += `${difference_values[i]} ${difference_unit_labels[i]}` + (difference_values[i] == 1 ? " " : "s ")
 
             }
-
-            // output_string = formatNumber(days, "day") + " " + formatNumber(hours, "hour") + " " + formatNumber(minutes, "minute") + " " + formatNumber(seconds, "second")
-
-            output_string = difference_string //`${difference_in_days} ${difference_in_hours} ${difference_in_minutes} ${difference_in_seconds}`
 
         }
 
@@ -142,19 +127,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function incidentHtml(incident) {
 
-        const incident_description = incident.description ? incident.description : `<span class="is-italic">No incident description provided.</span>`
+        const incident_description = incident.description ? incident.description : `<span class="is-italic">No description.</span>`
 
         return `<p>${incident.date} - ${incident_description}</p>`
 
     }
 
-    document.getElementById("clear_incidents").addEventListener("click", () => {
+    document.getElementById("reset_everything").addEventListener("click", () => {
 
-        if (confirm("Are you sure you want to clear all incidents? This cannot be undone.")) {
+        if (confirm("Are you sure you want to reset everything?")) {
 
-            incidents_container.innerHTML = ""
-            incidents = []
-            storage.remove("incidents")
+            if (confirm("Are you absolutely sure you want to reset everything? This can NOT be undone.")) {
+
+                if (prompt(`Type "Anthony is the best" to confirm that you definitely, absolutely, certainly wish to reset everything.`) == "Anthony is the best") {
+                    
+                    storage.remove("service_name")
+                    storage.remove("incidents")
+                    location.reload()
+
+                }
+
+            }
 
         }
 
