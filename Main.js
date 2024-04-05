@@ -52,11 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (incidents.length > 0) {
 
-            
             const current_time = new Date()
             const latest_time = new Date(incidents[incidents.length - 1].date)
             
-            const milliseconds = current_time - latest_time
+            const milliseconds = (current_time - latest_time)
             const seconds = Math.floor(milliseconds / 1000)
             const minutes = Math.floor(seconds / 60)
             const hours = Math.floor(minutes / 60)
@@ -85,7 +84,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (let i = position_first_value_not_zero; i < difference_values.length; i++) {
 
-                output_string += `${difference_values[i]} ${difference_unit_labels[i]}` + (difference_values[i] == 1 ? " " : "s ")
+                let add_to_end_of_string = ", "    // Separator for most cases
+
+                const displaying_two_or_more_units = position_first_value_not_zero <= difference_values.length - 2
+                const is_and_concatenation = i == difference_values.length - 2
+                const displaying_only_two_units = position_first_value_not_zero == difference_values.length - 2
+
+                if (displaying_two_or_more_units && is_and_concatenation) {
+
+                    if (displaying_only_two_units) {
+
+                        add_to_end_of_string = " and "
+
+                    } else {
+
+                        add_to_end_of_string = add_to_end_of_string + " and "
+
+                    }
+
+                }
+
+                const is_final_concatenation = i == difference_values.length - 1
+
+                if (is_final_concatenation) {
+
+                    add_to_end_of_string = ""
+
+                }
+
+                const this_unit_plural = difference_values[i] != 1
+
+                if (this_unit_plural) {
+
+                    add_to_end_of_string = "s" + add_to_end_of_string
+
+                }
+
+                output_string += `${difference_values[i]} ${difference_unit_labels[i]}` + add_to_end_of_string
 
             }
 
@@ -96,8 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setTimeSinceLastIncident()
-    setInterval(setTimeSinceLastIncident, 1000)    // Run just under once every second
-
+    setInterval(setTimeSinceLastIncident, 1000)    // Run every second
 
     // Add functionality to page buttons
     document.getElementById("create_new_incident").addEventListener("click", () => {
