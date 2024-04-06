@@ -75,37 +75,37 @@ export function createModal(id, prompt, active) {
 
 }  
 
-// A series of three user prompts to clear local storage
-export function resetProtocol(storage) {
+// Creates bulma modals to confirm the user wishes to reset local storage
+export function confirmReset(id, prompt, correctResponse = undefined) {
 
-  const id_1 = 'reset_warning_one'
-  const id_2 = 'reset_warning_two'
-  const id_3 = 'reset_warning_three'
+  const visible = true
 
-  createModal(id_1, 'Do you wish to reset?', true)
+  createModal(id, prompt, visible)
 
-  document.getElementById(`${id_1}_submit`).addEventListener('click', () => {
-    
-    createModal(id_2, 'Resetting will delete all data: Are you sure?', true)
+  return new Promise((resolve) => { // Waits for the user to click on the confirm button
 
-    document.getElementById(`${id_2}_submit`).addEventListener('click', () => {
+    document.getElementById(`${id}_submit`).addEventListener('click', () => {
 
-      createModal(id_3, "Please type 'YES' to proceed.", true)
+      if (correctResponse) {
 
-      document.getElementById(`${id_3}_submit`).addEventListener('click', () => {
+        const response = document.getElementById(id).querySelector('input').value
 
-        const input = document.getElementById(id_3).querySelector('input').value
+        if (response === correctResponse) {
 
-        input === 'YES' ? (
+          resolve(response)
 
-          storage.remove("service_name"),
-          storage.remove("incidents"),
-          location.reload()
+          deleteModal(undefined, id)
 
-        ) : deleteModal(id_3)
+        } else { deleteModal(undefined, id) }
 
-      })
+      } else {
 
+        resolve(true)
+
+        deleteModal(undefined, id)
+
+      }
+  
     })
 
   })
@@ -113,7 +113,9 @@ export function resetProtocol(storage) {
 } 
 
 // Processes a new user incident and places into local storage 
-export function inputUserIncident (storage, id, prompt) {
+export function modalPrompt (storage, prompt) {
+
+  const id = 'service_name_container'
 
   createModal(id, prompt)
 
@@ -145,7 +147,7 @@ export function deleteModal(element, id = undefined) {
 
   const modalToDelete = id ? document.getElementById(id) : element
 
-  modalToDelete ? modalToDelete.remove() || element.remove() : console.log('No element found')
+  modalToDelete.remove()
 
 }
 

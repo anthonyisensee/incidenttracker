@@ -13,11 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!service_name) {
 
-        const modal_id = 'service_name_container'
-
-        const modal_prompt = 'Enter the name of the service you wish to track incidents for:'
-
-        Modal.inputUserIncident(storage, modal_id, modal_prompt) // Creates a user prompt to save incident name to local storage
+        Modal.modalPrompt(storage, 'Enter the name of the service you wish to track incidents for:') // Creates a user prompt to save incident name to local storage
 
         // service_name = prompt("Enter the name of the service you wish to track incidents for:")
 
@@ -171,25 +167,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-    document.getElementById("reset_everything").addEventListener("click", () => {
+    // Reset protocol that creates bulma modals that confirm user wishes to clear local data
+    document.getElementById('reset_everything').addEventListener("click", () => {
 
-        Modal.resetProtocol(storage) // Three step protocol to reset local storage by prompting the user for confirmation
+        Modal.confirmReset('reset_warning_one', 'Do you wish to reset local storage?').then((confirmed) => {
 
-        // if (confirm("Are you sure you want to reset everything?")) {
+            if (confirmed) {
 
-        //     if (confirm("Are you absolutely sure you want to reset everything? This can NOT be undone.")) {
+                Modal.confirmReset('reset_warning_two', 'Resetting will delete all data: Are you sure?').then((confirmed) => {
 
-        //         if (prompt(`Type "Anthony is the best" to confirm that you definitely, absolutely, certainly wish to reset everything.`) == "Anthony is the best") {
-                    
-        //             storage.remove("service_name")
-        //             storage.remove("incidents")
-        //             location.reload()
+                    if (confirmed) {
 
-        //         }
+                        Modal.confirmReset('reset_warning_three', "Please type 'YES' to proceed.", 'YES').then((confirmed) => {
 
-        //     }
+                            confirmed ? (
 
-        // }
+                                storage.remove("service_name"),
+                                storage.remove("incidents"),
+                                location.reload()
+
+                            ) : undefined
+                        })
+
+                    }
+
+                })
+
+            }
+
+        })
 
     })
 
