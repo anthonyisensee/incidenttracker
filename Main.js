@@ -1,5 +1,7 @@
+import * as Modal from './Modal.js'
 import { LocalStorageInterface } from "./LocalStorageInterface.js";
 import { Incident } from "./Incident.js"
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -11,15 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!service_name) {
 
-        service_name = prompt("Enter the name of the service you wish to track incidents for:")
+        const modal_id = 'service_name_container'
 
-        storage.set("service_name", service_name)
+        const modal_prompt = 'Enter the name of the service you wish to track incidents for:'
+
+        Modal.inputUserIncident(storage, modal_id, modal_prompt) // Creates a user prompt to save incident name to local storage
+
+        // service_name = prompt("Enter the name of the service you wish to track incidents for:")
+
+        // storage.set("service_name", service_name)
 
     }
-
-    document.querySelectorAll('span.service-name').forEach(el => {
-        el.innerHTML = service_name
-    })
 
     // Load in any previously created incidents
     let incidents = []
@@ -169,21 +173,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("reset_everything").addEventListener("click", () => {
 
-        if (confirm("Are you sure you want to reset everything?")) {
+        Modal.resetProtocol(storage) // Three step protocol to reset local storage by prompting the user for confirmation
 
-            if (confirm("Are you absolutely sure you want to reset everything? This can NOT be undone.")) {
+        // if (confirm("Are you sure you want to reset everything?")) {
 
-                if (prompt(`Type "Anthony is the best" to confirm that you definitely, absolutely, certainly wish to reset everything.`) == "Anthony is the best") {
+        //     if (confirm("Are you absolutely sure you want to reset everything? This can NOT be undone.")) {
+
+        //         if (prompt(`Type "Anthony is the best" to confirm that you definitely, absolutely, certainly wish to reset everything.`) == "Anthony is the best") {
                     
-                    storage.remove("service_name")
-                    storage.remove("incidents")
-                    location.reload()
+        //             storage.remove("service_name")
+        //             storage.remove("incidents")
+        //             location.reload()
 
-                }
+        //         }
 
-            }
+        //     }
 
-        }
+        // }
 
     })
 
