@@ -1,8 +1,8 @@
 // Creates and appends the components for a bulma modal user prompt
-export function createModal(id, prompt, active) {
+export function createModal(id, prompt) {
 
   const container = document.createElement('div')
-  active ? container.classList.add('modal', 'is-active') : container.classList.add('modal')
+  container.classList.add('modal', 'is-active')
   container.setAttribute('id', id)
   document.body.append(container)
 
@@ -78,9 +78,7 @@ export function createModal(id, prompt, active) {
 // Creates bulma modals to confirm the user wishes to reset local storage
 export function confirmReset(id, prompt, correctResponse = undefined) {
 
-  const visible = true
-
-  createModal(id, prompt, visible)
+  createModal(id, prompt)
 
   return new Promise((resolve) => { // Waits for the user to click on the confirm button
 
@@ -120,9 +118,6 @@ export function modalPrompt (storage, prompt) {
   createModal(id, prompt)
 
   const modal = document.getElementById(id)
-
-  openModal(modal)
-
   const submit = document.getElementById(`${id}_submit`)
   const input = modal.querySelector('input')
 

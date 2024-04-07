@@ -17,12 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.innerHTML = service_name
         })
 
-    } else {
-
-        Modal.modalPrompt(storage, 'Enter the name of the service you wish to track incidents for:') // Creates a user prompt to save incident name to local storage
-
-    }
-
+    } 
 
     // Load in any previously created incidents
     let incidents = []
@@ -169,6 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<p>${incident.date} - ${incident_description}</p>`
 
     }
+
+    document.getElementById("set_service_name").addEventListener("click", () => {
+
+        Modal.modalPrompt(storage, 'Enter the name of the service you wish to track incidents for:') // Creates a user prompt to save incident name to local storage
+
+    })
 
     // Reset protocol that creates bulma modals that confirm user wishes to clear local data
     document.getElementById('reset_everything').addEventListener("click", () => {
