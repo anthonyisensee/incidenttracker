@@ -9,17 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Manage the name of the service for which incidents are being tracked.
     let service_name = storage.get("service_name")
 
-    if (!service_name) {
+    if (service_name) {
 
-        service_name = prompt("Enter the name of the service you wish to track incidents for:")
-
-        storage.set("service_name", service_name)
+        document.querySelectorAll('span.service-name').forEach(el => {
+            el.innerHTML = service_name
+        })
 
     }
-
-    document.querySelectorAll('span.service-name').forEach(el => {
-        el.innerHTML = service_name
-    })
 
     // Load in any previously created incidents
     let incidents = []
@@ -166,6 +162,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<p>${incident.date} - ${incident_description}</p>`
 
     }
+
+    document.getElementById("set_service_name").addEventListener("click", () => {
+
+        service_name = prompt("Enter the name of the service you wish to track incidents for:")
+
+        storage.set("service_name", service_name)
+
+        document.querySelectorAll('span.service-name').forEach(el => {
+            el.innerHTML = service_name
+        })
+
+    })
+
 
     document.getElementById("reset_everything").addEventListener("click", () => {
 
