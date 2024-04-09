@@ -1,60 +1,84 @@
-// Creates and appends the components for a bulma modal user prompt
-export function createModal(id, prompt) {
+// Creates and appends the components for a bulma modal user msg
+export function createModal(id, msg, prompt_title = undefined, type = 'default') {
 
-  const container = document.createElement('div')
-  container.classList.add('modal', 'is-active')
-  container.setAttribute('id', id)
-  document.body.append(container)
+  /*
+  Modal element tree
 
-  const escape = document.createElement('button')
-  escape.classList.add('modal-close', 'is-large')
-  escape.setAttribute('aria-label', 'close')
-  container.append(escape)
+  modal
+    |---> background
+    |---> card 
+            |---> header
+            |       |---> title (optional)
+            |---> body
+            |       |---> message
+            |       |---> input (optional)
+            |---> footer
+                    |---> controls
+                            |---> positive (btn)
+                            |---> negative (btn)
+  */
+
+  const modal = document.createElement('div')
+  modal.classList.add('modal', 'is-active')
+  modal.setAttribute('id', id)
+  document.body.append(modal)
 
   const background = document.createElement('div')
   background.classList.add('modal-background')
-  container.append(background)
+  modal.append(background)
 
-  const content = document.createElement('div')
-  content.classList.add('modal-content')
-  container.append(content)
+  const card = document.createElement('div')
+  card.classList.add('modal-card')
+  modal.append(card)
 
-  const box = document.createElement('div')
-  box.classList.add('box')
-  content.append(box)
+  const header = document.createElement('header')
+  header.classList.add('modal-card-head', 'py-4')
+  card.append(header)
 
-  const label = document.createElement('label')
-  label.classList.add('label', 'is-size-5')
-  label.innerText = prompt
+  const body = document.createElement('section')
+  body.classList.add('modal-card-body', 'py-4')
+  prompt_title || type === 'req-input' ? card.append(body) : undefined
 
-  const control_label = document.createElement('div')
-  control_label.append(label)
-  box.append(control_label)
+  const footer = document.createElement('footer')
+  footer.classList.add('modal-card-foot', 'py-2')
+  card.append(footer)
 
-  const input = document.createElement('input')
-  input.classList.add('input', 'is-normal')
-  input.setAttribute('type', 'text')
+  const title = document.createElement('p')
+  prompt_title ? title.classList.add('modal-card-title') : title.classList.add('modal-card-title', 'is-size-6')
+  prompt_title ? title.innerText = prompt_title : title.innerText = msg
+  header.append(title)
 
-  const control_input = document.createElement('div')
-  control_input.classList.add('control', 'is-expanded')
-  control_input.append(input)
+  const message = document.createElement('p') 
+  message.classList.add('label', 'is-size-6')
+  prompt_title ? message.innerText = msg : undefined
+  body.append(message)
 
-  const button = document.createElement('button')
-  button.classList.add('button', 'is-centered')
-  button.setAttribute('id', `${id}_submit`)
-  button.innerText = 'OK'
+  if (type === 'req-input') {
+    const input = document.createElement('input')
+    input.setAttribute('type', 'text')
+    input.classList.add('input', 'is-focused')
+    body.append(input)
+  }
 
-  const control_button = document.createElement('div')
-  control_button.classList.add('control')
-  control_button.append(button)
+  const controls = document.createElement('div')
+  controls.classList.add('buttons', 'is-flex', 'is-justify-content-end', 'is-flex-grow-1')
+  footer.append(controls)
 
-  const field = document.createElement('div')
-  field.classList.add('field', 'has-addons', 'mt-3')
-  field.append(control_input, control_button)
-  box.append(field)
+  const button_positive = document.createElement('button')
+  button_positive.classList.add('button')
+  button_positive.setAttribute('id', `${id}_submit`)
+  button_positive.innerText = 'OK'
+  controls.append(button_positive)
 
+  const button_negative = document.createElement('button')
+  button_negative.classList.add('button', 'exit')
+  button_negative.setAttribute('id', `${id}_cancel`)
+  button_negative.innerText = 'Cancel'
+  controls.append(button_negative)
+
+  
   // Add a click event on various child elements to delete the parent modal
-  const altCloseModal = (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+  const altCloseModal = (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot, .exit') || []).forEach(($close) => {
 
     const $target = $close.closest('.modal')
 
@@ -76,9 +100,9 @@ export function createModal(id, prompt) {
 }  
 
 // Creates bulma modals to confirm the user wishes to reset local storage
-export function confirmReset(id, prompt, correctResponse = undefined) {
+export function confirmReset(id, msg, correctResponse = undefined, type = undefined) {
 
-  createModal(id, prompt)
+  createModal(id, msg, undefined, type)
 
   return new Promise((resolve) => { // Waits for the user to click on the confirm button
 
@@ -87,7 +111,7 @@ export function confirmReset(id, prompt, correctResponse = undefined) {
       if (correctResponse) {
 
         const response = document.getElementById(id).querySelector('input').value
-
+        
         if (response === correctResponse) {
 
           resolve(response)
@@ -111,11 +135,12 @@ export function confirmReset(id, prompt, correctResponse = undefined) {
 } 
 
 // Processes a new user incident and places into local storage 
-export function modalPrompt (storage, prompt) {
+export function modalPrompt (storage, msg) {
 
   const id = 'service_name_container'
+  const title = 'Incident Name'
 
-  createModal(id, prompt)
+  createModal(id, msg, title, 'req-input')
 
   const modal = document.getElementById(id)
   const submit = document.getElementById(`${id}_submit`)

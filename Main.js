@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("set_service_name").addEventListener("click", () => {
 
-        Modal.modalPrompt(storage, 'Enter the name of the service you wish to track incidents for:') // Creates a user prompt to save incident name to local storage
+        Modal.modalPrompt(storage, 'Please enter the name of the service you wish to track incidents for.') // Creates a user prompt to save incident name to local storage
 
     })
 
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (confirmed) {
 
-                        Modal.confirmReset('reset_warning_three', "Please type 'YES' to proceed.", 'YES').then((confirmed) => {
+                        Modal.confirmReset('reset_warning_three', "Please type 'YES' to proceed.", 'YES', 'req-input').then((confirmed) => {
 
                             confirmed ? (
 
