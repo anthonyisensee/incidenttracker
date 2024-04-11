@@ -167,39 +167,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("set_service_name").addEventListener("click", () => {
 
-        Modal.modalPrompt(storage, 'Please enter the name of the service you wish to track incidents for.') // Creates a user prompt to save incident name to local storage
+        const promptUserIncidentName = new Modal.Modal('Enter the name of the service you wish to track incidents for.', 'Set Service Name', true)
+
+        promptUserIncidentName.prompt((input) => {
+
+            storage.set("service_name", input)
+
+            document.querySelectorAll('span.service-name').forEach(el => { el.innerHTML = input })
+
+        })
 
     })
 
+    
     // Reset protocol that creates bulma modals that confirm user wishes to clear local data
     document.getElementById('reset_everything').addEventListener("click", () => {
 
-        Modal.confirmReset('reset_warning_one', 'Do you wish to reset local storage?').then((confirmed) => {
+        const confirmReset_1 = new Modal.Modal('Do you wish to reset local storage?')
+        const confirmReset_2 = new Modal.Modal('Resetting will delete all data. Are you sure?')
+        const confirmReset_3 = new Modal.Modal("Please type 'YES' to proceed.", 'Danger', true)
 
-            if (confirmed) {
+        confirmReset_1.confirm((e) => { 
 
-                Modal.confirmReset('reset_warning_two', 'Resetting will delete all data: Are you sure?').then((confirmed) => {
+            e && confirmReset_2.confirm((e) => {
 
-                    if (confirmed) {
+                e && confirmReset_3.prompt((e) => {
 
-                        Modal.confirmReset('reset_warning_three', "Please type 'YES' to proceed.", 'YES', 'req-input').then((confirmed) => {
-
-                            confirmed ? (
-
-                                storage.remove("service_name"),
-                                storage.remove("incidents"),
-                                location.reload()
-
-                            ) : undefined
-                        })
-
-                    }
-
+                        e === 'YES' && (
+    
+                            storage.remove("service_name"),
+                            storage.remove("incidents"),
+                            location.reload()
+    
+                        )
+    
                 })
 
-            }
+            })
 
-        })
+         })
 
     })
 

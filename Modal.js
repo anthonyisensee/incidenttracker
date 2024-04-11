@@ -1,164 +1,135 @@
-// Creates and appends the components for a bulma modal user msg
-export function createModal(id, msg, prompt_title = undefined, type = 'default') {
+export class Modal {
 
-  /*
-  Modal element tree
+    modal = `
+        <div class="modal is-active">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head py-3">
+                    <p class="modal-card-title"></p>
+                </header>
+                <section class="modal-card-body py-5">
+                    <p class="modal-input is-size-5 mb-1"></p>
+                    <input id="modal-input" class="input">
+                </section>
+                <footer class="modal-card-foot py-3">
+                    <div class="modal-controls is-flex is-justify-content-end is-flex-grow-1">
+                        <button class="button is-danger exit" id="modal-primary-button"></button>
+                        <button class="button is-info exit ml-2" id="modal-secondary-button"></button>
+                    </div>
+                </footer>
+            </div>
+        </div> 
+    `
 
-  modal
-    |---> background
-    |---> card 
-            |---> header
-            |       |---> title (optional)
-            |---> body
-            |       |---> message
-            |       |---> input (optional)
-            |---> footer
-                    |---> controls
-                            |---> positive (btn)
-                            |---> negative (btn)
-  */
+    constructor(message, title, input, primaryBtnText, secondaryBtnText) {
 
-  const modal = document.createElement('div')
-  modal.classList.add('modal', 'is-active')
-  modal.setAttribute('id', id)
-  document.body.append(modal)
+        this.title = title || 'Attention' 
+        this.message = message || 'This is the default alert message. Have a great day!'
+        this.requireUserInput = input || false
+        this.primaryBtnText = primaryBtnText || 'OK'
+        this.secondaryBtnText = secondaryBtnText || 'Cancel'
+    }
 
-  const background = document.createElement('div')
-  background.classList.add('modal-background')
-  modal.append(background)
+    #createTemplate() {
 
-  const card = document.createElement('div')
-  card.classList.add('modal-card')
-  modal.append(card)
+        const parser = new DOMParser()
+        const parsedContent = parser.parseFromString(this.modal, 'text/html')
+                
+        const modalTitle = parsedContent.querySelector('.modal-card-title')
+        modalTitle.innerText = this.title
 
-  const header = document.createElement('header')
-  header.classList.add('modal-card-head', 'py-4')
-  card.append(header)
+        const modalMessage = parsedContent.querySelector('.modal-input')
+        modalMessage.innerText = this.message
 
-  const body = document.createElement('section')
-  body.classList.add('modal-card-body', 'py-4')
-  prompt_title || type === 'req-input' ? card.append(body) : undefined
+        if (!(this.requireUserInput)) {
 
-  const footer = document.createElement('footer')
-  footer.classList.add('modal-card-foot', 'py-2')
-  card.append(footer)
+            const modalInput = parsedContent.getElementById('modal-input')
+            parsedContent.getElementById('modal-input').parentNode.removeChild(modalInput)
 
-  const title = document.createElement('p')
-  prompt_title ? title.classList.add('modal-card-title') : title.classList.add('modal-card-title', 'is-size-6')
-  prompt_title ? title.innerText = prompt_title : title.innerText = msg
-  header.append(title)
+        }
 
-  const message = document.createElement('p') 
-  message.classList.add('label', 'is-size-6')
-  prompt_title ? message.innerText = msg : undefined
-  body.append(message)
+        const modalPrimaryButton = parsedContent.getElementById('modal-primary-button')
+        modalPrimaryButton.innerText = this.primaryBtnText
 
-  if (type === 'req-input') {
-    const input = document.createElement('input')
-    input.setAttribute('type', 'text')
-    input.classList.add('input', 'is-focused')
-    body.append(input)
-  }
+        const modalSecondaryButton = parsedContent.getElementById('modal-secondary-button')
+        modalSecondaryButton.innerText = this.secondaryBtnText
 
-  const controls = document.createElement('div')
-  controls.classList.add('buttons', 'is-flex', 'is-justify-content-end', 'is-flex-grow-1')
-  footer.append(controls)
+        const modalDiv = parsedContent.querySelector('.modal')
+        document.body.appendChild(modalDiv)
 
-  const button_positive = document.createElement('button')
-  button_positive.classList.add('button')
-  button_positive.setAttribute('id', `${id}_submit`)
-  button_positive.innerText = 'OK'
-  controls.append(button_positive)
+        // Event handling to close the modal with the mouse.
+        document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot, .exit').forEach(($close) => {
 
-  const button_negative = document.createElement('button')
-  button_negative.classList.add('button', 'exit')
-  button_negative.setAttribute('id', `${id}_cancel`)
-  button_negative.innerText = 'Cancel'
-  controls.append(button_negative)
+            const $target = $close.closest('.modal')
 
-  
-  // Add a click event on various child elements to delete the parent modal
-  const altCloseModal = (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot, .exit') || []).forEach(($close) => {
+            $close.addEventListener('click', () => { deleteModal($target) })
 
-    const $target = $close.closest('.modal')
+        }) 
 
-    $close.addEventListener('click', () => {
+        // Event handling to close the modal with the keyboard.
+        document.addEventListener('keydown', (event) => { event.key === "Escape" ? closeAllModals() : undefined }) 
 
-      deleteModal($target)
+    }
 
-    })
+    prompt(userFunction = undefined, alternateFunction = undefined) {
 
-  }) 
+        this.#createTemplate()
 
-  // Add a keyboard event to close all modals
-  const keyboard_close_modal = document.addEventListener('keydown', (event) => {
-
-    if (event.key === "Escape") { closeAllModals() }
-
-  })
-
-}  
-
-// Creates bulma modals to confirm the user wishes to reset local storage
-export function confirmReset(id, msg, correctResponse = undefined, type = undefined) {
-
-  createModal(id, msg, undefined, type)
-
-  return new Promise((resolve) => { // Waits for the user to click on the confirm button
-
-    document.getElementById(`${id}_submit`).addEventListener('click', () => {
-
-      if (correctResponse) {
-
-        const response = document.getElementById(id).querySelector('input').value
+        const primaryButton = document.getElementById('modal-primary-button')
+        const secondaryButton = document.getElementById('modal-secondary-button')
+        const userInput = document.getElementById('modal-input')
         
-        if (response === correctResponse) {
+        primaryButton.addEventListener('click', () => {
 
-          resolve(response)
+            if (userFunction) {
 
-          deleteModal(undefined, id)
+                return userFunction(userInput.value)
 
-        } else { deleteModal(undefined, id) }
+            }
+            
+        })
 
-      } else {
+        secondaryButton.addEventListener('click', () => {
 
-        resolve(true)
+            if (alternateFunction) {
 
-        deleteModal(undefined, id)
+                return alternateFunction(userInput.value)
 
-      }
-  
-    })
+            }
+            
+        })
 
-  })
+    }
 
-} 
+    confirm(userFunction = undefined, alternateFunction = undefined) {
 
-// Processes a new user incident and places into local storage 
-export function modalPrompt (storage, msg) {
+        this.#createTemplate()
 
-  const id = 'service_name_container'
-  const title = 'Incident Name'
+        const primaryButton = document.getElementById('modal-primary-button')
+        const secondaryButton = document.getElementById('modal-secondary-button')
 
-  createModal(id, msg, title, 'req-input')
+        primaryButton.addEventListener('click', () => {
 
-  const modal = document.getElementById(id)
-  const submit = document.getElementById(`${id}_submit`)
-  const input = modal.querySelector('input')
+            if (userFunction) {
 
-  submit.addEventListener('click', () => {
+                userFunction(true)
 
-    const incident = input.value
 
-    storage.set("service_name", incident)
+            }
 
-    document.querySelectorAll('span.service-name').forEach(el => {
-        el.innerHTML = incident
-    })
+        })
 
-    deleteModal(undefined, id)
+        secondaryButton.addEventListener('click', () => {
 
-  })
+            if (alternateFunction) {
+
+                alternateFunction(false)
+
+            }
+
+        })
+
+    }
 
 }
 
@@ -193,6 +164,8 @@ export function closeAllModals() {
   })
 
 }
+
+
 
 
   
