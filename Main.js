@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("set_service_name").addEventListener("click", () => {
 
-        const promptUserIncidentName = new Modal.Modal('Enter the name of the service you wish to track incidents for.', 'Set Service Name', true)
+        const promptUserIncidentName = new Modal.Modal('Enter the name of the service you wish to track incidents for.', 'Set Service Name')
 
         promptUserIncidentName.prompt((input) => {
 
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const confirmReset_1 = new Modal.Modal('Do you wish to reset local storage?')
         const confirmReset_2 = new Modal.Modal('Resetting will delete all data. Are you sure?')
-        const confirmReset_3 = new Modal.Modal("Please type 'YES' to proceed.", 'Danger', true)
+        const confirmReset_3 = new Modal.Modal("Please type 'YES' to proceed.", 'Danger')
 
         confirmReset_1.confirm((e) => { 
 

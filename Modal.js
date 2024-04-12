@@ -21,11 +21,11 @@ export class Modal {
         </div> 
     `
 
-    constructor(message, title, input, primaryBtnText, secondaryBtnText) {
+    constructor(message, title, primaryBtnText, secondaryBtnText) {
 
         this.title = title || 'Attention' 
         this.message = message || 'This is the default alert message. Have a great day!'
-        this.requireUserInput = input || false
+        this.requireUserInput = false
         this.primaryBtnText = primaryBtnText || 'OK'
         this.secondaryBtnText = secondaryBtnText || 'Cancel'
     }
@@ -73,6 +73,7 @@ export class Modal {
 
     prompt(userFunction = undefined, alternateFunction = undefined) {
 
+        this.requireUserInput = true
         this.#createTemplate()
 
         const primaryButton = document.getElementById('modal-primary-button')
@@ -113,7 +114,6 @@ export class Modal {
             if (userFunction) {
 
                 userFunction(true)
-
 
             }
 
