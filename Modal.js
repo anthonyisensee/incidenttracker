@@ -5,6 +5,7 @@ export class Modal {
     modal = `
         <div class="modal is-active" id="${this.#id}">
             <div class="modal-background"></div>
+            <button class="modal-close is-large" aria-label="close"></button>
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title"></p>
@@ -133,7 +134,7 @@ export class Modal {
 
     #createCloseEvents() {
 
-        document.querySelectorAll('.modal-background, .delete, .close').forEach((el) => {
+        document.querySelectorAll('.modal-background, .delete, .modal-close').forEach((el) => {
 
             el.addEventListener('click', () => { this.#close() })
 
