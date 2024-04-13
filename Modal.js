@@ -1,36 +1,44 @@
 export class Modal {
 
+    #id = 'modal-version-04/13/2024'
+
     modal = `
-        <div class="modal is-active">
+        <div class="modal is-active" id="${this.#id}">
             <div class="modal-background"></div>
             <div class="modal-card">
-                <header class="modal-card-head py-3">
+                <header class="modal-card-head">
                     <p class="modal-card-title"></p>
                 </header>
-                <section class="modal-card-body py-5">
-                    <p class="modal-input is-size-5 mb-1"></p>
-                    <input id="modal-input" class="input">
+                <section class="modal-card-body">
+                    <div class="field" id="modal-card-field">
+                        <label class="label"></label>
+                    </div>
                 </section>
-                <footer class="modal-card-foot py-3">
-                    <div class="modal-controls is-flex is-justify-content-end is-flex-grow-1">
-                        <button class="button is-danger exit" id="modal-primary-button"></button>
-                        <button class="button is-info exit ml-2" id="modal-secondary-button"></button>
+                <footer class="modal-card-foot is-justify-content-end">
+                    <div class="buttons">
+                        <button class="button is-danger" id="modal-primary-button"></button>
+                        <button class="button is-info" id="modal-secondary-button"></button>
                     </div>
                 </footer>
             </div>
         </div> 
     `
 
+    input = `<input id="modal-input" class="input">`
+
     constructor(message, title, primaryBtnText, secondaryBtnText) {
 
-        this.title = title || 'Attention' 
-        this.message = message || 'This is the default alert message. Have a great day!'
+        this.title = title ?? 'Attention' 
+        this.message = message ?? 'This is the default alert message. Have a great day!'
         this.requireUserInput = false
-        this.primaryBtnText = primaryBtnText || 'OK'
-        this.secondaryBtnText = secondaryBtnText || 'Cancel'
+        this.primaryBtnText = primaryBtnText ?? 'OK'
+        this.secondaryBtnText = secondaryBtnText ?? 'Cancel'
     }
 
     #createTemplate() {
+        
+        const existingModal = document.getElementById(`${this.#id}`)
+        existingModal && this.#close()
 
         const parser = new DOMParser()
         const parsedContent = parser.parseFromString(this.modal, 'text/html')
@@ -38,13 +46,15 @@ export class Modal {
         const modalTitle = parsedContent.querySelector('.modal-card-title')
         modalTitle.innerText = this.title
 
-        const modalMessage = parsedContent.querySelector('.modal-input')
+        const modalMessage = parsedContent.querySelector('.label')
         modalMessage.innerText = this.message
 
-        if (!(this.requireUserInput)) {
+        if (this.requireUserInput) {
 
-            const modalInput = parsedContent.getElementById('modal-input')
-            parsedContent.getElementById('modal-input').parentNode.removeChild(modalInput)
+            const parsedInput = parser.parseFromString(this.input, 'text/html')
+            const input = parsedInput.querySelector('input')
+            const parsedSection = parsedContent.getElementById('modal-card-field')
+            parsedSection.append(input)
 
         }
 
@@ -57,21 +67,11 @@ export class Modal {
         const modalDiv = parsedContent.querySelector('.modal')
         document.body.appendChild(modalDiv)
 
-        // Event handling to close the modal with the mouse.
-        document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot, .exit').forEach(($close) => {
-
-            const $target = $close.closest('.modal')
-
-            $close.addEventListener('click', () => { deleteModal($target) })
-
-        }) 
-
-        // Event handling to close the modal with the keyboard.
-        document.addEventListener('keydown', (event) => { event.key === "Escape" ? closeAllModals() : undefined }) 
+        this.#createCloseEvents() // Listens for events to close the modal
 
     }
 
-    prompt(userFunction = undefined, alternateFunction = undefined) {
+    prompt(funcToRunOnOkay, funcToRunOnCancel) {
 
         this.requireUserInput = true
         this.#createTemplate()
@@ -79,94 +79,76 @@ export class Modal {
         const primaryButton = document.getElementById('modal-primary-button')
         const secondaryButton = document.getElementById('modal-secondary-button')
         const userInput = document.getElementById('modal-input')
+
+        if (funcToRunOnOkay) {
         
-        primaryButton.addEventListener('click', () => {
+            primaryButton.addEventListener('click', () => {
 
-            if (userFunction) {
-
-                return userFunction(userInput.value)
-
-            }
+                funcToRunOnOkay(userInput.value)
             
-        })
+            })
+
+        }
 
         secondaryButton.addEventListener('click', () => {
 
-            if (alternateFunction) {
+            if (funcToRunOnCancel) {
 
-                return alternateFunction(userInput.value)
+                funcToRunOnCancel(userInput.value)
+                
+            } else { this.#close() }
 
-            }
-            
         })
 
     }
 
-    confirm(userFunction = undefined, alternateFunction = undefined) {
+    confirm(funcToRunOnOkay, funcToRunOnCancel) {
 
         this.#createTemplate()
 
         const primaryButton = document.getElementById('modal-primary-button')
         const secondaryButton = document.getElementById('modal-secondary-button')
 
-        primaryButton.addEventListener('click', () => {
+        if (funcToRunOnOkay) {
 
-            if (userFunction) {
+            primaryButton.addEventListener('click', () => {
 
-                userFunction(true)
+                funcToRunOnOkay(true)
 
-            }
+            })
 
-        })
+        }
 
         secondaryButton.addEventListener('click', () => {
 
-            if (alternateFunction) {
+            if (funcToRunOnCancel) {
 
-                alternateFunction(false)
-
-            }
+                funcToRunOnCancel(userInput.value)
+                
+            } else { this.#close() }
 
         })
 
     }
 
-}
+    #createCloseEvents() {
 
-// Removes a modal from the dom
-export function deleteModal(element, id = undefined) {
+        document.querySelectorAll('.modal-background, .delete, .close').forEach((el) => {
 
-  const modalToDelete = id ? document.getElementById(id) : element
+            el.addEventListener('click', () => { this.#close() })
 
-  modalToDelete.remove()
+        }) 
 
-}
+        document.addEventListener('keydown', (event) => { event.key === "Escape" && this.#close()})
 
-// Functions to open and close a modal
-export function openModal($el) {
+    }
 
-  $el.classList.add('is-active')
+    #close() {
 
-}
+        const modal = document.getElementById(this.#id)
 
-export function closeModal($el) {
-
-  $el.classList.remove('is-active')
+        modal && modal.remove()
+    
+      }
 
 }
-
-export function closeAllModals() {
-
-  (document.querySelectorAll('.modal') || []).forEach(($modal) => {
-
-    deleteModal($modal);
-
-  })
-
-}
-
-
-
-
-  
-  
