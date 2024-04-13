@@ -1,4 +1,4 @@
-import * as Modal from './Modal.js'
+import { Modal } from './Modal.js'
 import { LocalStorageInterface } from "./LocalStorageInterface.js";
 import { Incident } from "./Incident.js"
 
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("set_service_name").addEventListener("click", () => {
 
-        const promptUserIncidentName = new Modal.Modal('Enter the name of the service you wish to track incidents for.', 'Set Service Name')
+        const promptUserIncidentName = new Modal('Enter the name of the service you wish to track incidents for.', 'Set Service Name')
 
         promptUserIncidentName.prompt((input) => {
 
@@ -183,29 +183,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset protocol that creates bulma modals that confirm user wishes to clear local data
     document.getElementById('reset_everything').addEventListener("click", () => {
 
-        const confirmReset_1 = new Modal.Modal('Do you wish to reset local storage?')
-        const confirmReset_2 = new Modal.Modal('Resetting will delete all data. Are you sure?')
-        const confirmReset_3 = new Modal.Modal("Please type 'YES' to proceed.", 'Danger')
+        const confirmReset1 = new Modal('Do you wish to reset local storage?')
+        const confirmReset2 = new Modal('Resetting will delete all data. Are you sure?')
+        const confirmReset3 = new Modal("Please type 'YES' to proceed.", 'Danger')
 
-        confirmReset_1.confirm((e) => { 
+        confirmReset1.confirm((e) => { 
 
-            e && confirmReset_2.confirm((e) => {
+            e && confirmReset2.confirm((e) => {
 
-                e && confirmReset_3.prompt((e) => {
+                e && confirmReset3.prompt((e) => {
 
-                        e === 'YES' && (
-    
-                            storage.remove("service_name"),
-                            storage.remove("incidents"),
-                            location.reload()
-    
-                        )
+                    e === 'YES' && (
+
+                        storage.remove("service_name"),
+                        storage.remove("incidents"),
+                        location.reload()
+
+                    )
     
                 })
 
             })
 
-         })
+        })
 
     })
 
