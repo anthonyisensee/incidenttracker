@@ -1,5 +1,7 @@
+import { Modal } from './Modal.js'
 import { LocalStorageInterface } from "./LocalStorageInterface.js";
 import { Incident } from "./Incident.js"
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -15,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.innerHTML = service_name
         })
 
-    }
+    } 
 
     // Load in any previously created incidents
     let incidents = []
@@ -165,34 +167,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("set_service_name").addEventListener("click", () => {
 
-        service_name = prompt("Enter the name of the service you wish to track incidents for:")
+        const promptUserIncidentName = new Modal('Enter the name of the service you wish to track incidents for.', 'Set Service Name')
 
-        storage.set("service_name", service_name)
+        promptUserIncidentName.prompt((input) => {
 
-        document.querySelectorAll('span.service-name').forEach(el => {
-            el.innerHTML = service_name
+            storage.set("service_name", input)
+
+            document.querySelectorAll('span.service-name').forEach(el => { el.innerHTML = input })
+
         })
 
     })
 
+    
+    // Reset protocol that creates bulma modals that confirm user wishes to clear local data
+    document.getElementById('reset_everything').addEventListener("click", () => {
 
-    document.getElementById("reset_everything").addEventListener("click", () => {
+        const confirmReset1 = new Modal('Do you wish to reset local storage?')
+        const confirmReset2 = new Modal('Resetting will delete all data. Are you sure?')
+        const confirmReset3 = new Modal("Please type 'YES' to proceed.", 'Danger')
 
-        if (confirm("Are you sure you want to reset everything?")) {
+        confirmReset1.confirm((e) => { 
 
-            if (confirm("Are you absolutely sure you want to reset everything? This can NOT be undone.")) {
+            e && confirmReset2.confirm((e) => {
 
-                if (prompt(`Type "Anthony is the best" to confirm that you definitely, absolutely, certainly wish to reset everything.`) == "Anthony is the best") {
-                    
-                    storage.remove("service_name")
-                    storage.remove("incidents")
-                    location.reload()
+                e && confirmReset3.prompt((e) => {
 
-                }
+                    e === 'YES' && (
 
-            }
+                        storage.remove("service_name"),
+                        storage.remove("incidents"),
+                        location.reload()
 
-        }
+                    )
+    
+                })
+
+            })
+
+        })
 
     })
 
