@@ -1,6 +1,6 @@
 export class Modal {
 
-    #id = 'modal-version-04/13/2024'
+    #id = 'new.modal'
 
     modal = `
         <div class="modal is-active" id="${this.#id}">
@@ -30,7 +30,7 @@ export class Modal {
     constructor(message, title, primaryBtnText, secondaryBtnText) {
 
         this.title = title ?? 'Attention' 
-        this.message = message ?? 'This is the default alert message. Have a great day!'
+        this.message = message ?? 'Do you wish to proceed?'
         this.requireUserInput = false
         this.primaryBtnText = primaryBtnText ?? 'OK'
         this.secondaryBtnText = secondaryBtnText ?? 'Cancel'
@@ -86,7 +86,8 @@ export class Modal {
             primaryButton.addEventListener('click', () => {
 
                 funcToRunOnOkay(userInput.value)
-            
+                this.#close()
+
             })
 
         }
@@ -96,6 +97,7 @@ export class Modal {
             if (funcToRunOnCancel) {
 
                 funcToRunOnCancel(userInput.value)
+                this.#close()
                 
             } else { this.#close() }
 
@@ -125,6 +127,7 @@ export class Modal {
             if (funcToRunOnCancel) {
 
                 funcToRunOnCancel(userInput.value)
+                this.#close()
                 
             } else { this.#close() }
 
