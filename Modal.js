@@ -135,6 +135,53 @@ export class Modal {
 
     }
 
+    /**
+     * Returns a boolean result of multiple confirm modals ending with a user prompt for input.
+     * @param {Array.<string>} messages - An array of strings for which to show confirmation prompts. The last string will be the input prompt.
+     * @param {string} finalInputText - The text that must be matched for the final input prompt.
+     * @param {function} runOnFinalConfirmation - A function that will be executed when the confirmation is totally completed.
+     */
+    multipleConfirm(messages, finalInputText, runOnFinalConfirmation) {
+
+        const not_last_message = messages.length != 1
+        const message = messages[0]
+
+        console.log(this)
+
+        if (not_last_message) {  // Recursive general case
+
+            const confirm_modal = new Modal(message, this.title, this.primaryBtnText, this.secondaryBtnText)
+
+            confirm_modal.confirm(wasConfirmed => {
+
+                if (wasConfirmed) {
+
+                    messages.shift()
+
+                    this.multipleConfirm(messages, finalInputText, runOnFinalConfirmation)
+
+                }
+
+            })
+
+        } else {                // Recursive exit case
+
+            const prompt_modal = new Modal(message, this.title, this.primaryBtnText, this.secondaryBtnText)
+
+            prompt_modal.prompt(userInput => {
+
+                if (userInput === finalInputText) {
+
+                    runOnFinalConfirmation()
+
+                }
+
+            })
+
+        }
+
+    }
+
     #createCloseEvents() {
 
         document.querySelectorAll('.modal-background, .delete, .modal-close').forEach((el) => {
@@ -153,6 +200,6 @@ export class Modal {
 
         modal && modal.remove()
     
-      }
+    }
 
 }

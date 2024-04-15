@@ -183,29 +183,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset protocol that creates bulma modals that confirm user wishes to clear local data
     document.getElementById('reset_everything').addEventListener("click", () => {
 
-        const confirmReset1 = new Modal('Do you wish to reset local storage?')
-        const confirmReset2 = new Modal('Resetting will delete all data. Are you sure?')
-        const confirmReset3 = new Modal("Please type 'YES' to proceed.", 'Danger')
+        function deleteEverything() {
 
-        confirmReset1.confirm((e) => { 
+            storage.remove("service_name")
+            storage.remove("incidents")
+            location.reload()
 
-            e && confirmReset2.confirm((e) => {
+        }
 
-                e && confirmReset3.prompt((e) => {
-
-                    e === 'YES' && (
-
-                        storage.remove("service_name"),
-                        storage.remove("incidents"),
-                        location.reload()
-
-                    )
-    
-                })
-
-            })
-
-        })
+        const modal = new Modal(undefined, "Reset Everything", "Confirm")
+        const messages = ['Do you wish to reset local storage?', 'Resetting will delete all data. Are you sure?', 'Please type "YES" to delete everything.']
+        modal.multipleConfirm(messages, "YES", deleteEverything)
 
     })
 
