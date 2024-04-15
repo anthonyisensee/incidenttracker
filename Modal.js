@@ -1,6 +1,6 @@
 export class Modal {
 
-    #id = 'new.modal'
+    #id = 'modal'
 
     modal = `
         <div class="modal is-active" id="${this.#id}">
