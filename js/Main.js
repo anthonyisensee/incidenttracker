@@ -5,6 +5,8 @@ import { Incident } from "./Incident.js"
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    setColorSchemeOnDOMContentLoaded()
+
     const storage = new LocalStorageInterface()
     const incidents_container = document.getElementById("incidents_container")
 
@@ -187,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             storage.remove("service_name")
             storage.remove("incidents")
+            storage.remove("user_color_scheme_preference")
             location.reload()
 
         }
@@ -197,4 +200,116 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })
 
+    function setColorSchemeTo(value) {
+
+        if (value == "light" || value == "dark") {
+
+            document.querySelector('html').dataset.theme = value
+
+            // Set any icons on buttons meant to toggle color scheme to what clicking the button will toggle the scheme to.
+            const colorSchemeEmoji = value == "light" ? "🌙" : "☀️"
+
+            document.querySelector('#toggle_color_scheme .color-scheme-emoji').innerHTML = colorSchemeEmoji
+
+        }
+
+    }
+
+    // If the user has at some point set a default color scheme, set it when the page is rendered.
+    function setColorSchemeOnDOMContentLoaded() {
+
+        const storage = new LocalStorageInterface()
+
+        if (storage.get("user_color_scheme_preference")) {
+
+            // User has previously set a preference, add it to the 
+            const userColorSchemePreference = storage.get("user_color_scheme_preference")
+
+            setColorSchemeTo(userColorSchemePreference)
+
+        }
+
+    }
+
+    let clearableTimeoutIds = []
+
+    function toggleColorScheme() {
+
+        const storage = new LocalStorageInterface()
+
+        const oldUserColorSchemePreference = storage.get("user_color_scheme_preference")
+
+        let newUserColorSchemePreference = null
+
+        // Check to see if user has previously set a color scheme preference. If not, determine the switch based on the browser color scheme.
+        if (storage.get("user_color_scheme_preference")) {
+
+            newUserColorSchemePreference = oldUserColorSchemePreference == 'dark' ? 'light' : 'dark'
+
+
+        } else {
+
+            newUserColorSchemePreference = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark'
+
+        }
+
+        storage.set("user_color_scheme_preference", newUserColorSchemePreference)
+
+        setColorSchemeTo(newUserColorSchemePreference)
+
+        // Lay an easter egg to the console
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+
+            if (newUserColorSchemePreference == 'light') {
+                
+                console.clear()
+
+                const messages = [
+                    "You realize you've made a very poor decision.",
+                    "You can feel your weight against the back of your chair.",
+                    "The light blasts from your monitor. It's pinning you back!",
+                    "You can barely move.",
+                    "You MUST change the color scheme back. If you do not, dire consequences will befall you!!",
+                    "Your hand twitches as you reach for the 'Change Color Scheme' button. Will you be able to make it?!",
+                    "You're not sure you will..."
+                ]
+
+                const secondsBetweenMessages = 3
+
+                clearableTimeoutIds = []
+
+                for (let i = 0; i < messages.length; i++) {
+
+                    const timeout = setTimeout(() => console.log(messages[i]), 1000 * i * secondsBetweenMessages)
+
+                    clearableTimeoutIds.push(timeout)
+
+                }
+
+            } else {
+
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && newUserColorSchemePreference == 'dark') {
+                    
+                    // Just in case the user switches back before the other messages get a chance to play, cancel them so they don't play after the final messages
+                    clearableTimeoutIds.forEach(id => {
+                        clearTimeout(id)
+                    })
+
+                    console.log("Cool darkness washes over you. Ahhh, finally. Sweet, sweet relief.")
+
+                    setTimeout(() => console.log("The abominable ability to purposefully switch away from dark mode was requested by Max Lara. Max, if you really mean to use light mode instead of dark mode you should probably visit a psychiatrist. Or--at the very least--an optometrist."), 5000)
+        
+                }
+
+            }
+
+        }
+
+    }
+
+    // Attach functionality to change color scheme button
+    document.getElementById('toggle_color_scheme').addEventListener('click', () => toggleColorScheme())
+
 })
+
+
