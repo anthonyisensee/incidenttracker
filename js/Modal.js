@@ -146,8 +146,6 @@ export class Modal {
         const not_last_message = messages.length != 1
         const message = messages[0]
 
-        console.log(this)
-
         if (not_last_message) {  // Recursive general case
 
             const confirm_modal = new Modal(message, this.title, this.primaryBtnText, this.secondaryBtnText)
