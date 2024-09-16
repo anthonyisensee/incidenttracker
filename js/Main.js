@@ -1,4 +1,5 @@
 import { Modal } from './Modal.js'
+import { ExportDataModal } from './ExportDataModal.js'
 import { LocalStorageInterface } from "./LocalStorageInterface.js";
 import { Incident } from "./Incident.js"
 
@@ -197,6 +198,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = new Modal(undefined, "Reset Everything", "Confirm")
         const messages = ['Do you wish to reset local storage?', 'Resetting will delete all data. Are you sure?', 'Please type "YES" to delete everything.']
         modal.multipleConfirm(messages, "YES", deleteEverything)
+
+    })
+
+    const exportDataModal = new ExportDataModal()
+
+    document.querySelectorAll('[data-show-export-data-modal]').forEach(link => {
+
+        link.addEventListener("click", () => {
+            exportDataModal.open()
+        })
 
     })
 

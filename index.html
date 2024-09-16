@@ -10,6 +10,13 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
 </head>
 <body>
+    <div id="modal-container"></div>
+    <section class="section">
+        <div class="notification is-primary">
+            <button class="delete" onclick="this.parentNode.parentNode.removeChild(this.parentNode)"></button>
+            <p>Incident Tracker has been replaced by the much-improved <a href="https://eventtracker.anthonyisensee.com" target="_blank">Event Tracker</a>. <a data-show-export-data-modal>Export your data from Incident Tracker</a> today!</p>
+        </div>
+    </section>
     <section class="section has-text-centered">
         <div class="block pt-6">
             <div class="content is-large">
@@ -42,6 +49,7 @@
                 <button id="toggle_color_scheme" class="button is-info"><span class="color-scheme-emoji">🌓</span>&nbsp;Change Color Scheme</button>
                 <button id="set_service_name" class="button is-warning">✏️ Set Service Name</button>
                 <button id="reset_everything" class="button is-warning">🧨 Reset Everything</button>
+                <button id="export_data" data-show-export-data-modal class="button is-success">📤 Export Data</button>
             </div>
         </div>
     </section>
