@@ -22,8 +22,8 @@ export class ExportDataModal {
                             <p>To export your data from Incident Tracker and import it into Event Tracker:</p>
                             <ol>
                                 <li>Select the "Copy Data" button below.</li>
-                                <li>Navigate to <a href="https://eventtracker.anthonyisensee.com/settings">Event Tracker's settings page</a>.</li>
-                                <li>Click the "Import Data" button and follow the steps listed there.</li>
+                                <li>Navigate to <a href="https://eventtracker.anthonyisensee.com/settings?setting=importdata">Event Tracker's import data setting</a>.</li>
+                                <li>Paste your data into the "Data to Import" text area and click the "Import" button.</li>
                             </ol>
                         </div>
                         <div class="field">
